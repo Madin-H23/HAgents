@@ -28,6 +28,7 @@
     "typecheck:shared": "cd packages/shared && bun ../../node_modules/typescript/bin/tsc --noEmit",
     "check:arch": "bun run scripts/check-architecture.ts",
     "test:exec-surface": "powershell -NoProfile -File scripts/run-exec-surface-tests.ps1",
+    "validate:exec-surface": "bun run check:arch && bun run test:exec-surface",
     "typecheck:staged": "bash scripts/typecheck-staged.sh",
     "typecheck:all": "cd packages/core && bun run tsc --noEmit && cd ../shared && bun run tsc --noEmit && cd ../server-core && bun run tsc --noEmit && cd ../server && bun run tsc --noEmit && cd ../session-tools-core && bun run tsc --noEmit && cd ../pi-agent-server && bun run typecheck && cd ../../apps/electron && bun run typecheck && cd ../../packages/ui && bun run tsc --noEmit && cd ../.. && bun run typecheck:pages-worker",
     "server:start": "bun run packages/server/src/index.ts",

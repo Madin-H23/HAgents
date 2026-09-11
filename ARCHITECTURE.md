@@ -96,7 +96,19 @@ AgentBackend 接口（shared/agent/backend/types.ts）
 | 桌面 | `desktop/`（规划/推进中） | `apps/electron`（上游成熟） |
 | 工具 | 内置 7 + MCP + 子代理 | Native + Source + Skill + session tools + MCP |
 
-## 6. 动手检查清单
+## 6. 决策记录索引（docs/adr/）
+
+| ADR | 主题 |
+|-----|------|
+| 0001 | Fork 同步纪律（零语义 diff） |
+| 0002 | 家族定位：执行面为主战场 |
+| 0003 | 执行面可验证基线（Bun / S1 / S2 / typecheck） |
+| 0004 | 硬中止 vs 交接中断（Claude/Pi override） |
+| 0005 | Session tool context 与 AgentEvent 双类型隔离 |
+| 0006 | Source 激活 drain 与 forceAbort(SourceActivated) |
+| 0007 | AgentBackend factory 装配与扩展边界 |
+
+## 7. 动手检查清单
 
 1. 改动落在哪一层？类型 → `core`；横切/业务 → `shared`；RPC → `server-core`；面 → `apps/*`。
 2. 是否引入了第二个事件类型或第二套权限模式？（禁止，除非 ADR）
@@ -104,4 +116,5 @@ AgentBackend 接口（shared/agent/backend/types.ts）
 4. 术语是否符合 `CONTEXT.md`？
 5. 提交后是否跑 OCR？规则 `.opencodereview/rule.json`。
 6. headless 跑 `bun test` 前是否播种过 `config-defaults.json`？`powershell -File scripts/seed-test-env.ps1`（或 `bash scripts/seed-test-env.sh`）。
-7. 改动执行面/事件/中断语义后：`bun run check:arch` + `bun run test:exec-surface`。
+7. 改动执行面/事件/中断/Source 激活后：`bun run validate:exec-surface`（= `check:arch` + `test:exec-surface`）。
+8. 中断 API：plan/auth 用 `interruptForHandoff`；真取消用 `forceAbort`；Source 激活在 drain 边界后 `forceAbort(SourceActivated)`（ADR-0004/0006）。

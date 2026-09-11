@@ -25,4 +25,4 @@ Single-context：repo 根 `CONTEXT.md`（纯词汇表）+ `docs/adr/`。See `doc
 - 许可约束：Apache-2.0，分发与改造必须保留 `LICENSE` + `NOTICE`
 - OCR 代码审查（open-code-review）：规则在 `.opencodereview/rule.json`，用法 `ocr delegate preview --rule .opencodereview/rule.json --from main --to develop --format json`（delegation 模式）
 - headless 测试环境：先 `scripts/seed-test-env.ps1`（Windows）/ `scripts/seed-test-env.sh` 播种 `~/.craft-agent/config-defaults.json`，否则 ClaudeAgent 构造会因缺文件失败（见 ADR-0003）
-- 执行面一键验证：`bun run test:exec-surface`（seed + typecheck + S1/S2）；架构不变量：`bun run check:arch`
+- 执行面一键验证：`bun run validate:exec-surface`（check:arch + seed + typecheck + S1/S2/contracts）；拆分入口 `check:arch` / `test:exec-surface`

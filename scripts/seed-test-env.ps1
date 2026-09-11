@@ -15,7 +15,6 @@ if (-not (Test-Path $src)) {
 
 New-Item -ItemType Directory -Force -Path $cfgDir | Out-Null
 Copy-Item -Force $src $dst
-$hash = (Get-FileHash $dst -Algorithm SHA256).Hash
 Write-Host "Seeded $dst"
 Write-Host "  source: $src"
-Write-Host "  sha256: $hash"
+Write-Host "  bytes: $((Get-Item $dst).Length)"
