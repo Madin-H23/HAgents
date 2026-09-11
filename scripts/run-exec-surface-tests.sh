@@ -35,10 +35,11 @@ bun test \
   src/agent/core/__tests__/source-manager.test.ts \
   src/agent/core/__tests__/session-lifecycle.test.ts
 
-echo "==> contracts: handoff + AgentEvent isolation"
+echo "==> contracts: handoff + AgentEvent isolation + source drain"
 bun test \
   src/agent/__tests__/pi-agent-handoff.test.ts \
   src/agent/__tests__/claude-agent-handoff.test.ts \
-  src/agent/__tests__/agent-event-isolation.test.ts
+  src/agent/__tests__/agent-event-isolation.test.ts \
+  src/agent/__tests__/source-activation-drain.test.ts
 
 echo "==> exec-surface OK"
