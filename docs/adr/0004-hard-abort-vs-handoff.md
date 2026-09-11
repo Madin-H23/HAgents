@@ -29,24 +29,23 @@ Accepted（2026-09-11）— Spec [#7](https://github.com/Madin-H23/HAgents/issue
 | 接口如何区分？ | `AgentBackend.forceAbort`（hard-stop 注释）与 `interruptForHandoff`（handed to the UI 注释）并列 | `packages/shared/src/agent/backend/types.ts:370`、`:388` |
 | 默认实现是什么？ | `BaseAgent.interruptForHandoff` 默认委托 `forceAbort`；子类可 override | `packages/shared/src/agent/base-agent.ts:1094` |
 | Claude 如何 override？ | handoff 走 SDK `query.interrupt()`；hard abort 走 `AbortController.abort` | `packages/shared/src/agent/claude-agent.ts:2773`、`:2793` |
-| Pi 如何分叉？ | 同入口 `forceAbort` 内：`PlanSubmitted`/`AuthRequest` **只** complete 队列，不向子进程发 `abort`；其余 reason 再 `send({type:'abort'})` | `packages/shared/src/agent/pi-agent.ts:2324`、`:2355` |
-| pause point 从哪来？ | session MCP 工具完成：`SubmitPlan` / auth 工具 → UI 回调 → `interruptForHandoff` | `packages/shared/src/agent/base-agent.ts:425`–`:476` |
+| Pi 如何分叉？ | **契约收口（2026-09-11）**：`interruptForHandoff` 对 `PlanSubmitted`/`AuthRequest` 只 `abortTurnLocal`、不向子进程发 abort；`forceAbort` 一律 local teardown + `send({type:'abort'})` | `packages/shared/src/agent/pi-agent.ts` `interruptForHandoff` / `forceAbort` / `abortTurnLocal` |
+| pause point 从哪来？ | session MCP 工具完成：`SubmitPlan` / auth 工具 → UI 回调 → `interruptForHandoff` | `packages/shared/src/agent/base-agent.ts:425`–`:476`；SessionManager `interruptForHandoff(PlanSubmitted\|AuthRequest)` |
 | 会话层如何记 why？ | `AbortReason` + `set/consume/wasUserAbort`；`shouldClearSessionOnAbort` 仅在首条且无内容时清 | `packages/core` 经 `shared/agent/core/session-lifecycle.ts:22`、`:206` |
 
 ### 取舍
 
 1. **同一枚举、两个入口**，而不是拆成两套 enum — 降低会话层/面层心智负担；代价是 reason 与力度无类型级耦合，靠约定 + OCR/ADR 约束。
 2. **Claude handoff 用 cooperative interrupt** — 避免 AbortController 在 control-write 中途被拆；代价是 Claude 与 Pi 的 handoff 代码路径不同，但都满足「turn 结束、会话可续」。
-3. **Pi 把 handoff 特判收在 `forceAbort` 内** — 而不是仅依赖 `BaseAgent` 默认委托：子进程无需收到 abort 即可结束 turn，避免误杀；代价是 `forceAbort` 承担双职责，读代码必须看 reason 分支。
-4. **默认 handoff = hard abort** — 新后端即使不 override 也不会把 turn 挂死；代价是「语义正确」的 handoff 需要子类自觉 override（Claude 已做）。
+3. **Pi handoff 显式 override，`forceAbort` 一律 hard** — 收口原「`forceAbort` 双职责」代价；生产 SessionManager 已只对 plan/auth 调 `interruptForHandoff`，行为等价且契约与 `types.ts` JSDOC 一致。
+4. **默认 handoff = hard abort** — 新后端即使不 override 也不会把 turn 挂死；代价是「语义正确」的 handoff 需要子类自觉 override（Claude/Pi 均已做）。
 5. **不把 handoff 做成新事件类型** — 仍走 turn 结束 + 既有 UI 回调；避免第二套流式协议（ADR-0003）。
 
 ### 局限
 
-- `forceAbort` 对 `PlanSubmitted`/`AuthRequest` 的静默特判（Pi）是 **provider 内聚** 的，调用方无法从类型上区分「这次 forceAbort 其实是 handoff」——依赖会话层正确选 API。
 - `BaseAgent` 默认委托使「未 override 的新后端」在 handoff 时表现为 hard abort：功能正确、语义偏硬。
 - 本 ADR 不规定 UI 侧 plan/auth 卡片交互，只规定执行面中断边界。
-- 验证证据来自 S2 单测（委托默认行为、lifecycle），不包含 Electron 端到端 pause 流。
+- 验证覆盖：BaseAgent 默认委托 + Pi handoff/hard 分叉单测（`pi-agent-handoff.test.ts`）；不含 Electron 端到端 pause 流。
 
 ## 验收命令与证据
 
@@ -55,12 +54,16 @@ powershell -File scripts\seed-test-env.ps1
 cd packages\shared
 bun test `
   src/agent/__tests__/base-agent.test.ts `
+  src/agent/__tests__/pi-agent-handoff.test.ts `
+  src/agent/__tests__/claude-agent-handoff.test.ts `
   src/agent/core/__tests__/session-lifecycle.test.ts
-# base-agent: 含「should delegate handoff interrupts to forceAbort by default」
-# session-lifecycle: AbortReason 枚举值、set/consume、shouldClearSessionOnAbort
 ```
 
-实测（2026-09-11，Spec #1/#5 基线）：S2 相关 **101 pass / 0 fail**。
+| 覆盖 | 结论（2026-09-11） |
+|------|-------------------|
+| BaseAgent handoff 默认委托 | 基线 S2 内 pass |
+| Pi handoff 不发 abort / forceAbort 发 abort | `pi-agent-handoff.test.ts` |
+| Claude Query.interrupt | `claude-agent-handoff.test.ts` |
 
 ## Consequences
 

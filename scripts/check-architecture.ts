@@ -124,6 +124,14 @@ if (claude && /override\s+interruptForHandoff/.test(claude)) {
   fail('ClaudeAgent lost interruptForHandoff override (ADR-0004)');
 }
 
+// Pi overrides handoff (ADR-0004 contract fix)
+const piAgent = read('packages/shared/src/agent/pi-agent.ts');
+if (piAgent && /override\s+interruptForHandoff/.test(piAgent)) {
+  ok('PiAgent overrides interruptForHandoff');
+} else if (piAgent) {
+  fail('PiAgent lost interruptForHandoff override (ADR-0004)');
+}
+
 // --- report ---
 console.log('HAgents architecture check');
 console.log(`  root: ${relative(process.cwd(), root) || '.'}`);

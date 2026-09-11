@@ -2321,7 +2321,12 @@ export class PiAgent extends BaseAgent {
     this.preToolMetadataByCallId.clear();
   }
 
-  forceAbort(reason: AbortReason): void {
+  /**
+   * Local teardown shared by forceAbort / interruptForHandoff.
+   * Ends the host-side turn without deciding whether the Pi subprocess
+   * receives an abort message (see ADR-0004).
+   */
+  private abortTurnLocal(reason: AbortReason): void {
     // Fire Stop hook event (fire-and-forget)
     this.emitAutomationEvent('Stop', { hook_event_name: 'Stop' });
 
@@ -2351,13 +2356,29 @@ export class PiAgent extends BaseAgent {
 
     // Clear bridge cache for aborted turn.
     this.preToolMetadataByCallId.clear();
+  }
 
-    // For PlanSubmitted and AuthRequest, just interrupt the turn
-    if (reason === AbortReason.PlanSubmitted || reason === AbortReason.AuthRequest) {
-      return;
+  /**
+   * Handoff interrupt (plan submit / auth request / other pause points).
+   * PlanSubmitted and AuthRequest end the host turn WITHOUT aborting the Pi
+   * subprocess — the session stays resumable for the UI pause (ADR-0004).
+   * Other reasons fall through to hard abort semantics.
+   */
+  override interruptForHandoff(reason: AbortReason): void {
+    const isHandoffBoundary =
+      reason === AbortReason.PlanSubmitted || reason === AbortReason.AuthRequest;
+    this.abortTurnLocal(reason);
+    if (!isHandoffBoundary) {
+      this.send({ type: 'abort' });
     }
+  }
 
-    // For other reasons, send abort to subprocess
+  /**
+   * Hard abort: always tears down the host turn AND signals the Pi subprocess.
+   * Do not use for plan/auth handoff — that is interruptForHandoff.
+   */
+  forceAbort(reason: AbortReason): void {
+    this.abortTurnLocal(reason);
     this.send({ type: 'abort' });
   }
 
