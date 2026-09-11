@@ -107,6 +107,9 @@ AgentBackend 接口（shared/agent/backend/types.ts）
 | 0005 | Session tool context 与 AgentEvent 双类型隔离 |
 | 0006 | Source 激活 drain 与 forceAbort(SourceActivated) |
 | 0007 | AgentBackend factory 装配与扩展边界 |
+| 0008 | Pi event-adapter overflow / auto-retry 恢复状态机 |
+| 0009 | PreToolUse 权限管线（模式 / Source / 前置 / Ask） |
+| 0010 | SessionManager 中断选型与 source 激活服务器侧重发 |
 
 **Fork 本地包（非上游）**：`packages/agent-contracts`（`@hagents/agent-contracts`）——中断/AgentEvent 契约运行时护栏，实现 ADR-0004/0005/0006 的可复用判定；上游 `packages/*` 语义仍零 diff。
 

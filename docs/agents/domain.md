@@ -23,7 +23,10 @@ Engineering skills 探索 codebase 时，应如何消费这个 repo 的 domain d
 │   ├── 0004-hard-abort-vs-handoff.md
 │   ├── 0005-session-tool-context.md
 │   ├── 0006-source-activation-drain.md
-│   └── 0007-agent-backend-factory.md
+│   ├── 0007-agent-backend-factory.md
+│   ├── 0008-pi-event-adapter-recovery.md
+│   ├── 0009-pre-tool-use-permission-pipeline.md
+│   └── 0010-session-manager-interrupt-resend.md
 └── packages/ apps/
 ```
 

@@ -35,11 +35,13 @@ bun test \
   src/agent/core/__tests__/source-manager.test.ts \
   src/agent/core/__tests__/session-lifecycle.test.ts
 
-echo "==> contracts: handoff + AgentEvent isolation + source drain"
+echo "==> contracts: handoff + AgentEvent isolation + source drain + pre-tool-use"
 bun test \
   src/agent/__tests__/pi-agent-handoff.test.ts \
   src/agent/__tests__/claude-agent-handoff.test.ts \
   src/agent/__tests__/agent-event-isolation.test.ts \
-  src/agent/__tests__/source-activation-drain.test.ts
+  src/agent/__tests__/source-activation-drain.test.ts \
+  src/agent/__tests__/session-tool-safe-mode-permissions.test.ts \
+  ./src/agent/core/__tests__/pre-tool-use-checks.isolated.ts
 
 echo "==> exec-surface OK"
