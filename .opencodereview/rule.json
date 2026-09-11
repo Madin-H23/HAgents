@@ -1,0 +1,6 @@
+{
+  "version": 0,
+  "status": "shell",
+  "note": "首改业务代码前补齐规则。用法: ocr delegate preview --rule .opencodereview/rule.json --from main --to develop --format json",
+  "rules": []
+}
