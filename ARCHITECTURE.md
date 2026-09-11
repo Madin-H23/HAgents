@@ -108,6 +108,8 @@ AgentBackend 接口（shared/agent/backend/types.ts）
 | 0006 | Source 激活 drain 与 forceAbort(SourceActivated) |
 | 0007 | AgentBackend factory 装配与扩展边界 |
 
+**Fork 本地包（非上游）**：`packages/agent-contracts`（`@hagents/agent-contracts`）——中断/AgentEvent 契约运行时护栏，实现 ADR-0004/0005/0006 的可复用判定；上游 `packages/*` 语义仍零 diff。
+
 ## 7. 动手检查清单
 
 1. 改动落在哪一层？类型 → `core`；横切/业务 → `shared`；RPC → `server-core`；面 → `apps/*`。

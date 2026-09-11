@@ -1,0 +1,20 @@
+{
+  "name": "@hagents/agent-contracts",
+  "version": "0.1.0",
+  "license": "Apache-2.0",
+  "private": true,
+  "description": "HAgents fork-local runtime guards for AgentBackend interrupt and AgentEvent isolation contracts (ADR-0004/0005/0006)",
+  "type": "module",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "test": "bun test",
+    "typecheck": "bun ../../node_modules/typescript/bin/tsc --noEmit"
+  },
+  "dependencies": {
+    "@craft-agent/core": "workspace:*"
+  }
+}

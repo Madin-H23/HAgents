@@ -132,6 +132,13 @@ if (piAgent && /override\s+interruptForHandoff/.test(piAgent)) {
   fail('PiAgent lost interruptForHandoff override (ADR-0004)');
 }
 
+// fork-local contract package must exist (new-dir feature increment, ADR-0001)
+if (existsSync(join(root, 'packages/agent-contracts/src/index.ts'))) {
+  ok('@hagents/agent-contracts package present');
+} else {
+  fail('missing packages/agent-contracts (fork-local contract guards)');
+}
+
 // --- report ---
 console.log('HAgents architecture check');
 console.log(`  root: ${relative(process.cwd(), root) || '.'}`);
