@@ -104,3 +104,4 @@ AgentBackend 接口（shared/agent/backend/types.ts）
 4. 术语是否符合 `CONTEXT.md`？
 5. 提交后是否跑 OCR？规则 `.opencodereview/rule.json`。
 6. headless 跑 `bun test` 前是否播种过 `config-defaults.json`？`powershell -File scripts/seed-test-env.ps1`（或 `bash scripts/seed-test-env.sh`）。
+7. 改动执行面/事件/中断语义后：`bun run check:arch` + `bun run test:exec-surface`。
