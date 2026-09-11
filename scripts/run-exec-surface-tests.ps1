@@ -1,4 +1,4 @@
-# Run execution-surface baseline: seed → typecheck:shared → S1 → S2.
+# Run execution-surface baseline: seed → typecheck:shared → S1 → S2 → contracts.
 # Usage: powershell -File scripts/run-exec-surface-tests.ps1
 $ErrorActionPreference = 'Stop'
 $repoRoot = Split-Path -Parent $PSScriptRoot
@@ -37,6 +37,13 @@ bun test `
   src/agent/core/__tests__/source-manager.test.ts `
   src/agent/core/__tests__/session-lifecycle.test.ts
 if ($LASTEXITCODE -ne 0) { Write-Host 'S2 FAIL'; exit 1 }
+
+Write-Host '==> contracts: handoff + AgentEvent isolation'
+bun test `
+  src/agent/__tests__/pi-agent-handoff.test.ts `
+  src/agent/__tests__/claude-agent-handoff.test.ts `
+  src/agent/__tests__/agent-event-isolation.test.ts
+if ($LASTEXITCODE -ne 0) { Write-Host 'contracts FAIL'; exit 1 }
 
 Write-Host '==> exec-surface OK'
 exit 0

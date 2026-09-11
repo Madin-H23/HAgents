@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Run execution-surface baseline: seed → typecheck:shared → S1 → S2.
+# Run execution-surface baseline: seed → typecheck:shared → S1 → S2 → contracts.
 # Usage: bash scripts/run-exec-surface-tests.sh
 set -euo pipefail
 repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
@@ -34,5 +34,11 @@ bun test \
   src/agent/core/__tests__/permission-manager.test.ts \
   src/agent/core/__tests__/source-manager.test.ts \
   src/agent/core/__tests__/session-lifecycle.test.ts
+
+echo "==> contracts: handoff + AgentEvent isolation"
+bun test \
+  src/agent/__tests__/pi-agent-handoff.test.ts \
+  src/agent/__tests__/claude-agent-handoff.test.ts \
+  src/agent/__tests__/agent-event-isolation.test.ts
 
 echo "==> exec-surface OK"
