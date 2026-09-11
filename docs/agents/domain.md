@@ -18,9 +18,16 @@ Engineering skills 探索 codebase 时，应如何消费这个 repo 的 domain d
 ├── ARCHITECTURE.md
 ├── docs/adr/
 │   ├── 0001-fork-sync-discipline.md
-│   └── 0002-family-positioning.md
+│   ├── 0002-family-positioning.md
+│   ├── 0003-execution-surface-baseline.md
+│   ├── 0004-hard-abort-vs-handoff.md
+│   ├── 0005-session-tool-context.md
+│   ├── 0006-source-activation-drain.md
+│   └── 0007-agent-backend-factory.md
 └── packages/ apps/
 ```
+
+一键验证：`bun run check:arch`、`bun run test:exec-surface`（见 `AGENTS.md`）。
 
 ## Use the glossary's vocabulary
 
