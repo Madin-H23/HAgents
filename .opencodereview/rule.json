@@ -1,6 +1,54 @@
 {
-  "version": 0,
-  "status": "shell",
-  "note": "首改业务代码前补齐规则。用法: ocr delegate preview --rule .opencodereview/rule.json --from main --to develop --format json",
-  "rules": []
+  "version": 1,
+  "exclude": [
+    "**/bun.lock",
+    "**/package-lock.json",
+    "**/node_modules/**",
+    "apps/electron/resources/**",
+    "**/*.png",
+    "**/*.jpg",
+    "**/*.ico"
+  ],
+  "rules": [
+    {
+      "path": "packages/core/**",
+      "rule": "## 类型层稳定（ARCHITECTURE §1）\n- `packages/core` 只放稳定类型与极轻 utils；禁止引入重依赖或业务逻辑\n- 改动导出类型必须检查下游 `packages/shared` 与 `apps/*` 引用\n- `AgentEvent` 可辨识联合（`packages/core/src/types/message.ts`）是流式事件**单一事实来源**：新增事件变体必须是 discriminated union 成员，禁止在面层另造平行事件类型\n- 非必要不把 runtime 逻辑下沉进 core",
+      "merge_system_rule": true
+    },
+    {
+      "path": "packages/shared/src/agent/**",
+      "rule": "## 执行面硬约束（ADR-0002 / ADR-0003 / CONTEXT.md）\n- `AgentBackend`（`backend/types.ts`）是后端唯一接口：`chat(): AsyncGenerator<AgentEvent>` + abort/forceAbort/interruptForHandoff；UI/会话层不得感知 SDK 差异\n- `BaseAgent` 横切只实现一次：权限、Source、Prompt、用量；子类只做 provider 差异，禁止 Claude/Pi 各自漂移实现横切\n- 权限模式固定 `safe` / `ask` / `allow-all`；Source 类型固定 `mcp` / `api` / `local`——不得引入第二套\n- **硬中止 vs 交接中断**：真取消/拆除用 hard abort（forceAbort/AbortReason）；计划提交、鉴权等 pause point 用 handoff interrupt——语义不得混用\n- 术语必须用 CONTEXT.md canonical 词（AgentBackend / AgentEvent / BaseAgent / 会话工具上下文 / 权限闸门），避免 _Avoid_ 词\n- 为绿灯改测试断言或削弱断言视为严重问题",
+      "merge_system_rule": true
+    },
+    {
+      "path": "packages/shared/src/automations/**",
+      "rule": "## automations 的 AgentEvent ≠ core 的 AgentEvent\n- `packages/shared/src/automations/types.ts` 存在同名 `AgentEvent`（自动化匹配事件），与 `@craft-agent/core` 的流式 `AgentEvent` **不是同一类型**\n- 引用必须带包路径或局部别名；禁止在 automations 内 re-export core AgentEvent，也禁止在 core 引用 automations 事件\n- 修改 automations 事件枚举时，检查 PRETOOLUSE 等匹配管线，勿与执行面流式事件混淆",
+      "merge_system_rule": true
+    },
+    {
+      "path": "packages/shared/**",
+      "rule": "## shared 业务逻辑边界\n- 权限与凭据路径不得旁路：凭据只走 `src/credentials/`\n- MCP proxy 工具名只经 `proxyToolName(slug, name)` 构建（`mcp/proxy-tool-name.ts`），禁止在注册/调用侧各拼一套\n- 会话工具上下文（session-scoped tools）不得直接摸全局状态\n- headless 测试若需 `~/.craft-agent/config-defaults.json`，用播种脚本/环境引导，不在业务路径里写死测试钩子",
+      "merge_system_rule": true
+    },
+    {
+      "path": "apps/**",
+      "rule": "## 面层（Surface）纪律\n- 消费统一 AgentEvent/协议，不复制策略、不另造平行事件类型\n- Electron/WebUI/CLI 不是本仓差异化主战场（ADR-0002）：优先不在 apps/ 开新功能叙事\n- 禁止在面层直接摸存储实现",
+      "merge_system_rule": true
+    },
+    {
+      "path": "docs/adr/**",
+      "rule": "## ADR 纪律\n- 新决策落 docs/adr/，编号递增；与 ADR-0001/0002 冲突必须显式指出而非静默覆盖\n- ADR 用 CONTEXT.md 术语；问题/实现/取舍/局限四段齐全（ADR-0003 范式）",
+      "merge_system_rule": true
+    },
+    {
+      "path": ".opencodereview/**",
+      "rule": "## OCR 规则自身\n- 放宽/删除既有 rule 必须在 issue comment 说明原因\n- 规则应可执行、path 明确；禁止把密钥、token、个人路径写进规则",
+      "merge_system_rule": true
+    },
+    {
+      "path": "**/*",
+      "rule": "## Fork 同步纪律（ADR-0001，最高优先级）\n本仓是 lukilabs/craft-agents-oss 的 fork。审查时强制执行：\n- 不得重命名上游标识：包名（`@craft-agent/*`）、`CRAFT_*` 环境变量、`~/.craft-agent` 数据目录与上游行为语义零差异\n- 原创能力放新目录或独立包；改写上游文件仅限修 bug，禁止「顺手重构/重命名」\n- 分发与改造必须保留根目录 `LICENSE` 与 `NOTICE`\n- 发现任何扩大与上游 diff 的无关变更，标记 severity=high",
+      "merge_system_rule": true
+    }
+  ]
 }
