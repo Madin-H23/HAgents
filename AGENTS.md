@@ -23,4 +23,5 @@ Single-context：repo 根 `CONTEXT.md`（纯词汇表）+ `docs/adr/`。See `doc
 - 分支纪律：`main` 仅上游稳定态/里程碑；一切改造在 `develop`；大块改造走 `feature/<topic>`，`--no-ff` 合回 develop
 - 上游同步约束见 `docs/adr/0001-fork-sync-discipline.md`
 - 许可约束：Apache-2.0，分发与改造必须保留 `LICENSE` + `NOTICE`
-- OCR 代码审查（open-code-review）：规则在 `.opencodereview/rule.json`，用法 `ocr delegate preview --rule .opencodereview/rule.json --from main --to develop --format json`（delegation 模式；首改业务代码前补齐规则内容）
+- OCR 代码审查（open-code-review）：规则在 `.opencodereview/rule.json`，用法 `ocr delegate preview --rule .opencodereview/rule.json --from main --to develop --format json`（delegation 模式）
+- headless 测试环境：先 `scripts/seed-test-env.ps1`（Windows）/ `scripts/seed-test-env.sh` 播种 `~/.craft-agent/config-defaults.json`，否则 ClaudeAgent 构造会因缺文件失败（见 ADR-0003）

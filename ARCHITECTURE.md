@@ -103,3 +103,4 @@ AgentBackend 接口（shared/agent/backend/types.ts）
 3. 是否违反 fork-sync（改名上游标识 / 动 `CRAFT_*` 语义）？见 ADR-0001。
 4. 术语是否符合 `CONTEXT.md`？
 5. 提交后是否跑 OCR？规则 `.opencodereview/rule.json`。
+6. headless 跑 `bun test` 前是否播种过 `config-defaults.json`？`powershell -File scripts/seed-test-env.ps1`（或 `bash scripts/seed-test-env.sh`）。
