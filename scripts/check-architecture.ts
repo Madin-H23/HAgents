@@ -139,6 +139,16 @@ if (existsSync(join(root, 'packages/agent-contracts/src/index.ts'))) {
   fail('missing packages/agent-contracts (fork-local contract guards)');
 }
 
+// SourceType stays closed set (ADR-0013 / CONTEXT)
+const sourceTypes = read('packages/shared/src/sources/types.ts');
+if (sourceTypes) {
+  if (/export type SourceType = 'mcp' \| 'api' \| 'local'/.test(sourceTypes)) {
+    ok('SourceType = mcp|api|local');
+  } else {
+    fail('SourceType no longer mcp|api|local (ADR-0013)');
+  }
+}
+
 // --- AbortReason enum ↔ agent-contracts tables (anti-drift, ADR-0004/0006) ---
 const interruptContracts = read('packages/agent-contracts/src/interrupt.ts');
 if (lifecycle && interruptContracts) {

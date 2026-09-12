@@ -28,7 +28,8 @@ Engineering skills 探索 codebase 时，应如何消费这个 repo 的 domain d
 │   ├── 0009-pre-tool-use-permission-pipeline.md
 │   ├── 0010-session-manager-interrupt-resend.md
 │   ├── 0011-session-manager-midstream-queue.md
-│   └── 0012-pi-agent-server-process.md
+│   ├── 0012-pi-agent-server-process.md
+│   └── 0013-sources-credentials-boundary.md
 └── packages/ apps/
 ```
 

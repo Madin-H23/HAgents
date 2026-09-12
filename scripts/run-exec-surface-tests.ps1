@@ -48,5 +48,14 @@ bun test `
   ./src/agent/core/__tests__/pre-tool-use-checks.isolated.ts
 if ($LASTEXITCODE -ne 0) { Write-Host 'contracts FAIL'; exit 1 }
 
+Write-Host '==> sources/credentials contract pins'
+bun test `
+  src/sources/__tests__/source-config-validation.test.ts `
+  src/sources/__tests__/server-builder-authScheme.test.ts `
+  src/sources/__tests__/credential-manager-renew.test.ts `
+  src/sources/__tests__/credential-manager-expiry.test.ts `
+  src/sources/__tests__/api-tools-credential-freshness.test.ts
+if ($LASTEXITCODE -ne 0) { Write-Host 'sources FAIL'; exit 1 }
+
 Write-Host '==> exec-surface OK'
 exit 0
