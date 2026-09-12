@@ -111,6 +111,7 @@ AgentBackend 接口（shared/agent/backend/types.ts）
 | 0009 | PreToolUse 权限管线（模式 / Source / 前置 / Ask） |
 | 0010 | SessionManager 中断选型与 source 激活服务器侧重发 |
 | 0011 | SessionManager 中流 queue/steer 与队列重放 |
+| 0012 | pi-agent-server 子进程面边界（settings/retry/ephemeral） |
 
 **Fork 本地包（非上游）**：`packages/agent-contracts`（`@hagents/agent-contracts`）——中断/AgentEvent 契约运行时护栏，实现 ADR-0004/0005/0006 的可复用判定；上游 `packages/*` 语义仍零 diff。
 
