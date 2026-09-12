@@ -26,7 +26,8 @@ Engineering skills 探索 codebase 时，应如何消费这个 repo 的 domain d
 │   ├── 0007-agent-backend-factory.md
 │   ├── 0008-pi-event-adapter-recovery.md
 │   ├── 0009-pre-tool-use-permission-pipeline.md
-│   └── 0010-session-manager-interrupt-resend.md
+│   ├── 0010-session-manager-interrupt-resend.md
+│   └── 0011-session-manager-midstream-queue.md
 └── packages/ apps/
 ```
 

@@ -139,6 +139,43 @@ if (existsSync(join(root, 'packages/agent-contracts/src/index.ts'))) {
   fail('missing packages/agent-contracts (fork-local contract guards)');
 }
 
+// --- AbortReason enum ↔ agent-contracts tables (anti-drift, ADR-0004/0006) ---
+const interruptContracts = read('packages/agent-contracts/src/interrupt.ts');
+if (lifecycle && interruptContracts) {
+  const enumRe = /export enum AbortReason \{([\s\S]*?)\n\}/;
+  const enumBody = lifecycle.match(enumRe)?.[1] ?? '';
+  const enumValues = [...enumBody.matchAll(/=\s*'([a-z_]+)'/g)].map((m) => m[1]!);
+  const handoffBody =
+    interruptContracts.match(/HANDOFF_ABORT_REASONS\s*=\s*\[([\s\S]*?)\]/)?.[1] ?? '';
+  const hardBody =
+    interruptContracts.match(/HARD_ABORT_REASONS\s*=\s*\[([\s\S]*?)\]/)?.[1] ?? '';
+  const handoff = [...handoffBody.matchAll(/'([a-z_]+)'/g)].map((m) => m[1]!);
+  const hard = [...hardBody.matchAll(/'([a-z_]+)'/g)].map((m) => m[1]!);
+  const contractsAll = new Set([...handoff, ...hard]);
+  const enumSet = new Set(enumValues);
+
+  for (const v of enumValues) {
+    if (!contractsAll.has(v)) {
+      fail(`AbortReason "${v}" missing from agent-contracts HANDOFF/HARD tables`);
+    }
+  }
+  for (const v of contractsAll) {
+    if (!enumSet.has(v)) {
+      fail(`agent-contracts reason "${v}" not in AbortReason enum`);
+    }
+  }
+  for (const v of handoff) {
+    if (hard.includes(v)) fail(`reason "${v}" listed as both handoff and hard`);
+  }
+  if (enumValues.length === 7 && handoff.length === 2 && hard.length === 5) {
+    ok('AbortReason ↔ agent-contracts tables in sync (7=2+5, disjoint)');
+  } else if (failures.every((f) => !f.includes('AbortReason') && !f.includes('agent-contracts'))) {
+    ok(
+      `AbortReason ↔ agent-contracts tables in sync (enum=${enumValues.length} handoff=${handoff.length} hard=${hard.length})`,
+    );
+  }
+}
+
 // --- report ---
 console.log('HAgents architecture check');
 console.log(`  root: ${relative(process.cwd(), root) || '.'}`);
