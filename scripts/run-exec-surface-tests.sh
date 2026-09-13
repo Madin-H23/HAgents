@@ -52,4 +52,10 @@ bun test \
   src/sources/__tests__/credential-manager-expiry.test.ts \
   src/sources/__tests__/api-tools-credential-freshness.test.ts
 
+echo "==> sessions/labels contract pins"
+bun test \
+  src/labels/__tests__/filter.test.ts \
+  src/sessions/__tests__/persistence-queue.test.ts \
+  src/sessions/__tests__/previous-permission-mode.test.ts
+
 echo "==> exec-surface OK"

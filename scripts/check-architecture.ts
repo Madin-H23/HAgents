@@ -149,6 +149,30 @@ if (sourceTypes) {
   }
 }
 
+// Single label-filter predicate (ADR-0014)
+const labelFilter = read('packages/shared/src/labels/filter.ts');
+if (labelFilter && /export function matchesLabelFilter/.test(labelFilter)) {
+  ok('matchesLabelFilter present (single label filter predicate)');
+} else if (labelFilter) {
+  fail('matchesLabelFilter missing (ADR-0014)');
+}
+
+// Pages data-store must stay Bun-only subpath (ADR-0015)
+const pagesIndex = read('packages/shared/src/pages/index.ts');
+const dataStore = read('packages/shared/src/pages/data-store.ts');
+if (dataStore) {
+  if (/bun:sqlite/.test(dataStore)) {
+    ok('pages data-store still uses bun:sqlite');
+  } else {
+    fail('pages data-store lost bun:sqlite (ADR-0015)');
+  }
+}
+if (pagesIndex && /export\s+(\*|\{[^}]*\})\s+from\s+['"]\.\/data-store(?:\.ts)?['"]/.test(pagesIndex)) {
+  fail('pages barrel must not re-export data-store (ADR-0015)');
+} else if (pagesIndex) {
+  ok('pages barrel does not re-export data-store');
+}
+
 // --- AbortReason enum ↔ agent-contracts tables (anti-drift, ADR-0004/0006) ---
 const interruptContracts = read('packages/agent-contracts/src/interrupt.ts');
 if (lifecycle && interruptContracts) {

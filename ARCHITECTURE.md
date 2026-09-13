@@ -113,6 +113,8 @@ AgentBackend 接口（shared/agent/backend/types.ts）
 | 0011 | SessionManager 中流 queue/steer 与队列重放 |
 | 0012 | pi-agent-server 子进程面边界（settings/retry/ephemeral） |
 | 0013 | Sources / Credentials 边界（类型封闭、刷新与门禁段） |
+| 0014 | Sessions 存储与工作区/label 过滤单一谓词 |
+| 0015 | Skills / Pages / Tasks 边界（只读消化） |
 
 **Fork 本地包（非上游）**：`packages/agent-contracts`（`@hagents/agent-contracts`）——中断/AgentEvent 契约运行时护栏，实现 ADR-0004/0005/0006 的可复用判定；上游 `packages/*` 语义仍零 diff。
 

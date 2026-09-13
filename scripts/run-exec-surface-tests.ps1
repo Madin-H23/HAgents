@@ -57,5 +57,12 @@ bun test `
   src/sources/__tests__/api-tools-credential-freshness.test.ts
 if ($LASTEXITCODE -ne 0) { Write-Host 'sources FAIL'; exit 1 }
 
+Write-Host '==> sessions/labels contract pins'
+bun test `
+  src/labels/__tests__/filter.test.ts `
+  src/sessions/__tests__/persistence-queue.test.ts `
+  src/sessions/__tests__/previous-permission-mode.test.ts
+if ($LASTEXITCODE -ne 0) { Write-Host 'sessions FAIL'; exit 1 }
+
 Write-Host '==> exec-surface OK'
 exit 0
